@@ -26,6 +26,7 @@ class Ausy0201Tank : public Unit {
   [[nodiscard]] const char *Author() const override;
   void UpdateSpeedScale(int acceleration);
   void UpdateAngularSpeedScale(int angular_acceleration);
+  void UpdateTurretRotation(float target_turret_rotation);
 
   float turret_rotation_{0.0f};
   uint32_t fire_count_down_{0};
@@ -35,6 +36,7 @@ class Ausy0201Tank : public Unit {
   const float Decelerate_time_constant_{1.0f};
   const float Angular_accelerate_time_constant_{0.5f};
   const float Angular_decelerate_time_constant_{0.5f};
+  const float turret_rotation_time_constant_{0.3f};
   float speed_scale_{0.0f};
   const float Max_speed_{5.0f};
   float angular_speed_scale_{0.0f};

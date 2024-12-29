@@ -122,7 +122,7 @@ void Ausy0201Tank::TankMove(float move_speed, float rotate_angular_speed) {
     rotation_offset *=
         kSecondPerTick * rotate_angular_speed * GetAngularSpeedScale();
     game_core_->PushEventRotateUnit(id_, rotation_ + rotation_offset);
-    //printf("angular_speed_scale: %.3f\n", GetAngularSpeedScale());
+    // printf("angular_speed_scale: %.3f\n", GetAngularSpeedScale());
   }
 }
 
@@ -131,11 +131,16 @@ void Ausy0201Tank::TurretRotate() {
   if (player) {
     auto &input_data = player->GetInputData();
     auto diff = input_data.mouse_cursor_position - position_;
-    if (glm::length(diff) < 1e-4) {
-      turret_rotation_ = rotation_;
-    } else {
-      turret_rotation_ = std::atan2(diff.y, diff.x) - glm::radians(90.0f);
+    float target_turret_rotation = rotation_;
+    if (glm::length(diff) > 1e-4) {
+      target_turret_rotation = std::atan2(diff.y, diff.x) - glm::radians(90.0f);
     }
+    UpdateTurretRotation(target_turret_rotation);
+    /*
+    printf("turret_rotation: %.3f; target_rotation: %.3f\n",
+           glm::degrees(turret_rotation_),
+           glm::degrees(target_turret_rotation));
+    */
   }
 }
 
@@ -179,11 +184,26 @@ void Ausy0201Tank::UpdateSpeedScale(int acceleration) {
 
 void Ausy0201Tank::UpdateAngularSpeedScale(int angular_acceleration) {
   if (!angular_acceleration) {
-    angular_speed_scale_ -=
-        angular_speed_scale_ * kSecondPerTick / Angular_decelerate_time_constant_;
+    angular_speed_scale_ -= angular_speed_scale_ * kSecondPerTick /
+                            Angular_decelerate_time_constant_;
   } else {
     angular_speed_scale_ += (angular_acceleration - angular_speed_scale_) *
                             kSecondPerTick / Angular_accelerate_time_constant_;
+  }
+}
+
+void Ausy0201Tank::UpdateTurretRotation(float target_turret_rotation) {
+  if(target_turret_rotation - turret_rotation_ > glm::radians(180.0f)) {
+    target_turret_rotation -= glm::radians(360.0f);
+  } else if(turret_rotation_ - target_turret_rotation > glm::radians(180.0f)) {
+    target_turret_rotation += glm::radians(360.0f);
+  }
+  turret_rotation_ += (target_turret_rotation - turret_rotation_) *
+                      kSecondPerTick / turret_rotation_time_constant_;
+  if(turret_rotation_ < glm::radians(-270.0f)) {
+    turret_rotation_ += glm::radians(360.0f);
+  } else if(turret_rotation_ > glm::radians(90.0f)) {
+    turret_rotation_ -= glm::radians(360.0f);
   }
 }
 
