@@ -313,6 +313,19 @@ bool GameCore::IsOutOfRange(glm::vec2 p) const {
          p.y < boundary_low_.y || p.y > boundary_high_.y;
 }
 
+float GameCore::GetBoundaryNormalDirection(glm::vec2 p) const {
+  if (p.x < boundary_low_.x) {
+    return glm::radians(-90.0f);
+  } else if (p.x > boundary_high_.x) {
+    return glm::radians(90.0f);
+  } else if (p.y < boundary_low_.y) {
+    return glm::radians(0.0f);
+  } else if (p.y > boundary_high_.y) {
+    return glm::radians(-180.0f);
+  }
+  return 0.0f;
+}
+
 std::vector<const char *> GameCore::GetSelectableUnitList() const {
   std::vector<const char *> result;
   for (auto &selectable_unit : selectable_unit_list_) {

@@ -1,7 +1,7 @@
 #include "battle_game/core/bullets/bullets.h"
 #include "battle_game/core/game_core.h"
 #include "battle_game/graphics/graphics.h"
-#include "tiny_tank.h"
+#include "tank_ausy0201.h"
 
 namespace battle_game::unit {
 
@@ -155,6 +155,12 @@ void Ausy0201Tank::Fire() {
             position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
             turret_rotation_, GetDamageScale(), velocity);
         fire_count_down_ = kTickPerSecond;  // Fire interval 1 second.
+      } else if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_RIGHT]) {
+        auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
+        GenerateBullet<bullet::Superball>(
+            position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
+            turret_rotation_, GetDamageScale(), velocity);
+        fire_count_down_ = 2*kTickPerSecond;  // Fire interval 22 second.
       }
     }
   }
