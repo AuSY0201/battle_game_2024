@@ -17,9 +17,9 @@ Superball::Superball(GameCore *core,
 }
 
 void Superball::Render() {
-  SetTransformation(position_, rotation_, glm::vec2{0.1f});
+  SetTransformation(position_, rotation_, glm::vec2{0.5f});
   SetColor(game_core_->GetPlayerColor(player_id_));
-  SetTexture(BATTLE_GAME_ASSETS_DIR "textures/particle3.png");
+  SetTexture(BATTLE_GAME_ASSETS_DIR "textures/particle_superball.png");
   DrawModel(0);
 }
 
