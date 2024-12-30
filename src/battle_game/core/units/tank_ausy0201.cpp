@@ -1,7 +1,8 @@
+#include "tank_ausy0201.h"
+
 #include "battle_game/core/bullets/bullets.h"
 #include "battle_game/core/game_core.h"
 #include "battle_game/graphics/graphics.h"
-#include "tank_ausy0201.h"
 
 namespace battle_game::unit {
 
@@ -149,18 +150,17 @@ void Ausy0201Tank::Fire() {
     auto player = game_core_->GetPlayer(player_id_);
     if (player) {
       auto &input_data = player->GetInputData();
+      auto velocity = GetBulletVelocity();
       if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_LEFT]) {
-        auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
         GenerateBullet<bullet::CannonBall>(
             position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
             turret_rotation_, GetDamageScale(), velocity);
         fire_count_down_ = kTickPerSecond;  // Fire interval 1 second.
       } else if (input_data.mouse_button_down[GLFW_MOUSE_BUTTON_RIGHT]) {
-        auto velocity = Rotate(glm::vec2{0.0f, 20.0f}, turret_rotation_);
         GenerateBullet<bullet::Superball>(
             position_ + Rotate({0.0f, 1.2f}, turret_rotation_),
-            turret_rotation_, GetDamageScale(), velocity);
-        fire_count_down_ = 2*kTickPerSecond;  // Fire interval 22 second.
+            turret_rotation_, GetDamageScale(), velocity, turret_angular_speed_);
+        fire_count_down_ = 2 * kTickPerSecond;  // Fire interval 22 second.
       }
     }
   }
@@ -199,18 +199,27 @@ void Ausy0201Tank::UpdateAngularSpeedScale(int angular_acceleration) {
 }
 
 void Ausy0201Tank::UpdateTurretRotation(float target_turret_rotation) {
-  if(target_turret_rotation - turret_rotation_ > glm::radians(180.0f)) {
+  if (target_turret_rotation - turret_rotation_ > glm::radians(180.0f)) {
     target_turret_rotation -= glm::radians(360.0f);
-  } else if(turret_rotation_ - target_turret_rotation > glm::radians(180.0f)) {
+  } else if (turret_rotation_ - target_turret_rotation > glm::radians(180.0f)) {
     target_turret_rotation += glm::radians(360.0f);
   }
-  turret_rotation_ += (target_turret_rotation - turret_rotation_) *
-                      kSecondPerTick / turret_rotation_time_constant_;
-  if(turret_rotation_ < glm::radians(-270.0f)) {
+  turret_angular_speed_ = (target_turret_rotation - turret_rotation_) /
+                          turret_rotation_time_constant_;
+  turret_rotation_ += turret_angular_speed_ * kSecondPerTick;
+  if (turret_rotation_ < glm::radians(-270.0f)) {
     turret_rotation_ += glm::radians(360.0f);
-  } else if(turret_rotation_ > glm::radians(90.0f)) {
+  } else if (turret_rotation_ > glm::radians(90.0f)) {
     turret_rotation_ -= glm::radians(360.0f);
   }
+}
+
+glm::vec2 Ausy0201Tank::GetBulletVelocity() const {
+  glm::vec2 velocity = {0.0f, 20.0f};
+  velocity.x -= 1.2f * turret_angular_speed_;
+  velocity = Rotate(velocity, turret_rotation_);
+  velocity += Rotate({0.0f, Max_speed_*GetSpeedScale()}, rotation_); 
+  return velocity;
 }
 
 const char *Ausy0201Tank::UnitName() const {

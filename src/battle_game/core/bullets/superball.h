@@ -12,6 +12,15 @@ class Superball : public Bullet {
              float rotation,
              float damage_scale,
              glm::vec2 velocity);
+  Superball(GameCore *core,
+             uint32_t id,
+             uint32_t unit_id,
+             uint32_t player_id,
+             glm::vec2 position,
+             float rotation,
+             float damage_scale,
+             glm::vec2 velocity,
+             float angular_velocity);
   ~Superball() override;
   void Render() override;
   void Update() override;

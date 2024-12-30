@@ -16,6 +16,20 @@ Superball::Superball(GameCore *core,
       velocity_(velocity) {
 }
 
+Superball::Superball(GameCore *core,
+                     uint32_t id,
+                     uint32_t unit_id,
+                     uint32_t player_id,
+                     glm::vec2 position,
+                     float rotation,
+                     float damage_scale,
+                     glm::vec2 velocity,
+                     float angular_velocity)
+    : Bullet(core, id, unit_id, player_id, position, rotation, damage_scale),
+      velocity_(velocity),
+      angular_velocity_(angular_velocity) {
+}
+
 void Superball::Render() {
   SetTransformation(position_, rotation_, glm::vec2{0.5f});
   SetColor(game_core_->GetPlayerColor(player_id_));
