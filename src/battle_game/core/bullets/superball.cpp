@@ -99,9 +99,9 @@ void Superball::DealCollision(float normal_rotation) {
                         glm::vec4{velocity_, 0.0f, 0.0f}};
   velocity_.y *= -1;
   float x_velocity =
-      velocity_.x * 3.0f / 7.0f + angular_velocity_ * radius_ * 4.0f / 7.0f;
+      velocity_.x * 3.0f / 7.0f - angular_velocity_ * radius_ * 4.0f / 7.0f;
   float angular_velocity =
-      angular_velocity_ * (-3.0f) / 7.0f + velocity_.x * 10.0f / 7.0f / radius_;
+      angular_velocity_ * (-3.0f) / 7.0f - velocity_.x * 10.0f / 7.0f / radius_;
   velocity_.x = x_velocity;
   angular_velocity_ = angular_velocity;
   velocity_ = glm::vec2{glm::rotate(glm::mat4{1.0f}, normal_rotation,
